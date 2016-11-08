@@ -1,0 +1,39 @@
+{
+  "name": "rxjs-in-action",
+  "version": "1.0.0",
+  "description": "A code sample repository for the RxJS in Action book",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RxJSInAction/rxjs-in-action.git"
+  },
+  "keywords": [
+    "rx",
+    "rxjs",
+    "reactive-programming",
+    "async",
+    "functional",
+    "frp"
+  ],
+  "author": "Paul Daniels",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RxJSInAction/rxjs-in-action/issues"
+  },
+  "homepage": "https://github.com/RxJSInAction/rxjs-in-action#readme",
+  "devDependencies": {
+    "connect": "^3.5.0",
+    "connect-route": "^0.1.5",
+    "gulp": "^3.9.1",
+    "gulp-connect": "^5.0.0",
+    "serve-static": "^1.11.1"
+  },
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "codemirror": "^5.20.2",
+    "rxjs": "^5.0.0-rc.2"
+  }
+}
