@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="codemirror/lib/codemirror.css">
+  <link rel="stylesheet" href="codemirror/theme/dracula.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="container grid">
+  <select id="example-change">
+    <option value="2.1">2.1</option>
+    <option value="2.2">2.2</option>
+  </select>
+  <button id="reload-btn">Reload</button>
+  <button id="run-btn">Run!</button>
+
+  <form>
+  <h2>HTML</h2>
+  <textarea id="html"></textarea>
+
+  <h2>JavaScript</h2>
+  <textarea id="javascript"></textarea>
+
+  <h2>CSS</h2>
+  <textarea id="css"></textarea>
+  </form>
+</div>
+
+<div class="output grid">
+  <iframe sandbox="allow-scripts allow-same-origin" id="output"></iframe>
+</div>
+
+<script src="https://unpkg.com/@reactivex/rxjs@5.0.0-rc.2/dist/global/Rx.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+<script src="codemirror/lib/codemirror.js"></script>
+<script src="codemirror/addon/mode/multiplex.js"></script>
+<script src="codemirror/mode/css/css.js"></script>
+<script src="codemirror/mode/javascript/javascript.js"></script>
+<script src="codemirror/mode/xml/xml.js"></script>
+<script src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
+
+<script src="js/editors.js"></script>
+<script src="js/runtime.js"></script>
+</body>
+</html>
