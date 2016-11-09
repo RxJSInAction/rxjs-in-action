@@ -47,7 +47,7 @@ const runtime$ = (function() {
     (instance, change) => instance.getValue())
     .startWith(defaultHtml);
 
-  function buildTag(tagName, options, transform = identity => identity) {
+  function buildTag(tagName, options, transform = x => x) {
     return (source) => {
       const attrs = [];
       for (let k in options) {
@@ -55,7 +55,6 @@ const runtime$ = (function() {
       }
 
       return `<${tagName} ${attrs.join(' ')}>${transform(source)}</${tagName}>`;
-
     };
   }
 
@@ -76,7 +75,42 @@ const runtime$ = (function() {
     .startWith('')
     .debounceTime(3000)
     .map(buildTag('script', {type: 'application/javascript'}, function(code) {
-      return `(function wrapper() {${code}})()`;
+      // console redirect
+      const consolePoly =
+    `
+    if(console && console.log) {
+        //Set up iframe for redirection
+        let original = window.console;
+        let iframe = parent.document.getElementById('console');
+        let consoleFrame = iframe.contentWindow || iframe.contentDocument;
+        if (consoleFrame.document) consoleFrame = consoleFrame.document;
+        let write = (frame => {
+            return content => {
+              frame.open();
+              frame.write(content);
+              frame.close();
+            };
+        })(consoleFrame);
+        write(''); // clear contents on change
+
+        window.console = {
+          log: (val) => {
+             let previous = consoleFrame.body.innerHTML || '';
+             write(previous.trim() + "<br />" + val);
+          },
+          warn: (val) => {
+              //original.warn.call(original, '[WARN] ' + val);
+              parent.document.getElementById('console').src += "data:text/html;charset=utf-8, [WARN] " + escape(val);
+          },
+          error: (err) => {
+              //original.error.call(original, '[ERROR] ' + val);
+              parent.document.getElementById('console').src += "data:text/html;charset=utf-8, [ERROR] " + escape(err);
+          }
+        };
+    }
+
+    `.trim();
+      return `${consolePoly}(function wrapper() {${code}})()`;
     }));
 
   const css$ = Rx.Observable.fromEvent(cssEditor, 'change',
@@ -86,6 +120,8 @@ const runtime$ = (function() {
 
   const update$ = Rx.Observable.combineLatest(html$, js$, css$,
     (html, javascript, css) => ({html, javascript, css}));
+
+
 
   return update$
     .map(contents => {
