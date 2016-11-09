@@ -1,6 +1,6 @@
 /**
- *  RxJS in action
- *  Chapter #
+ *  RxJS in Action
+ *  Listing 2.1
  *  @author Paul Daniels
  *  @author Luis Atencio
  */
