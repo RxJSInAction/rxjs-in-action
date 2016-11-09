@@ -99,12 +99,12 @@ const runtime$ = (function() {
              write(previous.trim() + "<br />" + val);
           },
           warn: (val) => {
-              //original.warn.call(original, '[WARN] ' + val);
-              parent.document.getElementById('console').src += "data:text/html;charset=utf-8, [WARN] " + escape(val);
+            let previous = consoleFrame.body.innerHTML || '';
+            write(previous.trim() + "<br />" + val);
           },
           error: (err) => {
-              //original.error.call(original, '[ERROR] ' + val);
-              parent.document.getElementById('console').src += "data:text/html;charset=utf-8, [ERROR] " + escape(err);
+            let previous = consoleFrame.body.innerHTML || '';
+            write(previous.trim() + "<br />" + val);
           }
         };
     }
