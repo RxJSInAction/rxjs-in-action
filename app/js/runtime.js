@@ -14,7 +14,7 @@
     content => {
       // Rewrites the contents of the iframe
       // Prevents carry over from previous examples
-      doc[0].open();      
+      doc[0].open();       
       doc[0].write(content);
       doc[0].close();
     },
