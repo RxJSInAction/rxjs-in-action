@@ -1,6 +1,6 @@
 /**
  *  RxJS in Action
- *  Listing 3.1
+ *  Listing 2.4
  *  @author Paul Daniels
  *  @author Luis Atencio
  */
@@ -9,28 +9,25 @@ const progressBar$ = Rx.Observable.create(observer => {
    const SPEED =  50;
 
    let val = 0;
-   let timeoutId = 0;
    function progress() {
      if(++val <= 100) {
        observer.next(val);
-       timeoutId = setTimeout(progress, SPEED);
+       setTimeout(progress, SPEED);
      }
      else {
        observer.complete();
      }
    };
-   timeoutId  = setTimeout(progress, OFFSET);
-
-   return () => { //#A
-      clearTimeout(timeoutId);
-    };
+   setTimeout(progress, OFFSET);
 });
 
 //--------------------------------------------------//
 //                Usage                             //
 //--------------------------------------------------//
-const subs = progressBar$.subscribe(console.log, null, () => console.log('Complete!'));
-
-setTimeout(() => {
-  subs.unsubscribe();
-}, 6000);
+const label = document.querySelector('#progress-indicator');
+progressBar$
+  .subscribe(
+    val   => label.textContent = (Number.isInteger(val) ? val + "%" : val),
+    error => console.log(error.message),
+    ()    => label.textContent = 'Complete!'
+);

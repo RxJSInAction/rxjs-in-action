@@ -1,36 +1,18 @@
 /**
  *  RxJS in Action
- *  Listing 3.2
+ *  Listing 3.3
  *  @author Paul Daniels
  *  @author Luis Atencio
  */
-const progressBar$ = Rx.Observable.create(observer => {
-   const OFFSET = 3000;
-   const SPEED =  50;
-
-   let val = 0;
-   let timeoutId = 0;
-   function progress() {
-     if(++val <= 100) {
-       observer.next(val);
-       timeoutId = setTimeout(progress, SPEED);
-     }
-     else {
-       observer.complete();
-     }
-   };
-   timeoutId  = setTimeout(progress, OFFSET);
-
-   return () => { //#A
-      clearTimeout(timeoutId);
-    };
+const promise = new Promise((resolve, reject) => {  
+    setTimeout(() => {
+       resolve(42);
+    }, 10000);
 });
-
-//--------------------------------------------------//
-//                Usage                             //
-//--------------------------------------------------//
-const subs = progressBar$.subscribe(console.log, null, () => console.log('Complete!'));
-
-setTimeout(() => {
-  subs.unsubscribe();
-}, 6000);
+promise.then(val => {
+   console.log(`In then(): ${val}`);
+});
+const subscription$ = Rx.Observable.fromPromise(promise).subscribe(val => {
+   console.log(`In subscribe(): ${val}`);
+});
+subscription$.unsubscribe();
