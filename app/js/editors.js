@@ -73,7 +73,7 @@ const runtime$ = (function() {
   const js$ = Rx.Observable.fromEvent(jsEditor, 'change',
     (instance, change) => instance.getValue())
     .startWith('console.log("Welcome to RxJS in Action Code!")')
-    .debounceTime(3000)
+    .debounceTime(1000)
     .map(buildTag('script', {type: 'application/javascript'}, function(code) {
       // console redirect
       const consolePoly =
