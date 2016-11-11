@@ -4,14 +4,9 @@
  *  @author Paul Daniels
  *  @author Luis Atencio
  */
-Rx.Observable.fromEvent(users, 'change')
-  .map(event =>
-       {
-         return {  //#A
-           name: event.target.value,
-           status: event.target.checked
-         }
-       })
-  .filter(obj => obj.status) //#B
-  .do(name => `Removing ${user.name}`)
-  .subscribe(addToRemoveList);
+const isNumericalKeyCode = code => code >= 48 && code <= 57;
+const input = document.querySelector('#input');
+Rx.Observable.fromEvent(input, 'keyup')
+  .pluck('keyCode')
+  .filter(isNumericalKeyCode)
+  .subscribe(code => console.log(`User typed: ${String.fromCharCode(code)}`));
