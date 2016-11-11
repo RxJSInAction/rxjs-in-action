@@ -6,6 +6,7 @@
  *  @author Paul Daniels
  *  @author Luis Atencio
  */
+ console.log('Note: Please turn on CORS in your browser');
  const Money = function (val, currency) {
    return {
      value: function () {
