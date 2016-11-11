@@ -1,6 +1,6 @@
 /**
  *  RxJS in Action
- *  Listing 6.9 and 6.10
+ *  Listing 6.12
  *  @author Paul Daniels
  *  @author Luis Atencio
  */
@@ -35,39 +35,39 @@
 }
 
 function getTransactionsArray() {
-  return [
-   new Transaction('Brendan Eich', 'withdraw', 500, 'checking'),
-   new Transaction('George Lucas', 'deposit',  800, 'savings'),
-   new Transaction('Emmet Brown', 'transfer', 2000, 'checking', 'savings'),
-   new Transaction('Bjarne Stroustrup', 'transfer', 1000, 'savings', 'CD'),
+   return [
+     new Transaction('Brendan Eich', 'withdraw', 500, 'checking'),
+     new Transaction('George Lucas', 'deposit',  800, 'savings'),
+     new Transaction('Emmet Brown', 'transfer', 2000, 'checking', 'savings'),
+     new Transaction('Bjarne Stroustrup', 'transfer', 1000, 'savings', 'CD'),
+     new Transaction('Bjarne Stroustrup', 'transfer', 1000, 'savings', 'CD'),
+     new Transaction('Bjarne Stroustrup', 'transfer', 1000, 'savings', 'CD')
   ];
 }
-
 const txDb = new PouchDB('transactions');
-const accountsDb = new PouchDB('accounts');
 
 const writeTx$ = tx => Rx.Observable.of(tx)
   .timestamp()
-  .map(obj => Object.assign({}, obj.value, { 
+  .map(obj => Object.assign({}, obj.value, {
                 date: obj.timestamp
               })
    )
   .do(tx => console.log(`Processing transaction for: ${tx.name}`))
   .mergeMap(datedTx => Rx.Observable.fromPromise(txDb.post(datedTx)));
 
-Rx.Observable.from(getTransactionsArray())
-  .concatMap(writeTx$)
-  .subscribe(
-    rec => console.log(`New record created: ${rec.id}`),
-    err => console.log('Error: ' + err),
-    ()  => console.log('Database populated!')
-  );
-
+const count = {
+  map: function (doc) {
+    emit(doc.name);
+  },
+  reduce: '_count'
+};
 
 Rx.Observable.from(getTransactionsArray())
-  .concatMap(writeTx$)
+  .switchMap(writeTx$)
+  .mergeMap(() => Rx.Observable.fromPromise(
+     txDb.query(count, {reduce: true})))
   .subscribe(
-    rec => console.log(`New record created: ${rec.id}`),
-    err => console.log('Error: ' + err),
-    ()  => console.log('Database populated!')
+    recs  => console.log('Total: ' + recs.rows[0].value),
+    error => console.log('Error: ' + error),
+    ()    => console.log('Query completed!')
   );
