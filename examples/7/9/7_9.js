@@ -1,11 +1,63 @@
 /**
  *  RxJS in Action
- *  Listing 5.6
+ *  Listing 7.9
  *  Note: make sure you have turned on CORS sharing in you browser so that you can make
  *  cross-site requests
  *  @author Paul Daniels
  *  @author Luis Atencio
  */
+
+ class Try {
+     constructor(val) {
+       this._val = val;
+     }
+
+     static of(val) {
+        if(val === null || val.constructor === Error
+           || val instanceof Error) {
+ 	    	return new Failure(val);
+ 	   }
+        return new Success(val);
+     }
+
+     map(fn) {
+        try {
+           return Try.of(fn(this._val));
+        }
+        catch (e) {
+           return Try.of(e);
+        }
+     }
+ }
+
+ class Success extends Try {
+
+    getOrElse(anotherVal) {
+      return this._val;
+    }
+
+    getOrElseThrow() {
+      return this._val;
+    }
+ }
+
+ class Failure extends Try {
+
+   map(fn) {
+     return this;
+   }
+
+   getOrElse(anotherVal) {
+      return anotherVal;
+    }
+
+    getOrElseThrow() {
+      if(this._val !== null) {
+          throw this._val;
+      }
+    }
+ }
+
  console.log('Note: Please turn on CORS in your browser');
  const Money = function (val, currency) {
    return {
@@ -42,18 +94,27 @@
    });
 
 
+
  const csv = str => str.split(/,\s*/);
  const webservice = 'http://download.finance.yahoo.com/d/quotes.csv?s=$symbol &f=sa&e=.csv';
-
  const currency = 'usd';
 
  const requestQuote$ = symbol =>
       Rx.Observable.fromPromise(
         ajax(webservice.replace(/\$symbol/, symbol)))
+
       .map(response => response.replace(/"/g, ''))
-      .map(csv);
+      .map(csv)
+      .catch(() => Rx.Observable.of([new Error('Check again later...'), 0]))
+      .finally(() => {
+         updateSubscription.unsubscribe();
+      });
 
  const twoSecond$ = Rx.Observable.interval(2000);
+
+ const updateSubscription = twoSecond$.subscribe(() => {
+    console.log('Last update:' + new Date().toLocaleTimeString());
+ });
 
  const fetchDataInterval$ = symbol => twoSecond$
       .mergeMap(() => requestQuote$(symbol));
@@ -84,8 +145,11 @@
       priceElem.innerHTML = new USDMoney(price).toString();
  };
 
- ticks$.subscribe(
+ ticks$
+ .map(([symbol, price]) => [Try.of(symbol).getOrElseThrow(), price])
+ .subscribe(
    ([symbol, price]) => {
+
    	 let id = 'row-' + symbol.toLowerCase();
    	 let row = document.querySelector(`#${id}`);
    	 if(!row) {
