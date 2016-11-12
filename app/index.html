@@ -11,6 +11,7 @@
 <body>
 
 <div class="container grid">
+  <label for="example-change">Select code listing</label>
   <select id="example-change">
     <option value="welcome">Welcome</option>
     <option value="2.1">2.1</option>
@@ -56,9 +57,13 @@
     <option value="7.1">7.1</option>
     <option value="7.3">7.3</option>
     <option value="7.4">7.4</option>
+    <option value="7.5">7.5</option>
+    <option value="7.6">7.6</option>
+    <option value="7.7">7.7</option>
+    <option value="7.8">7.8</option>
   </select>
-  <button id="reload-btn">Reload</button>
-  <button id="run-btn">Run!</button>
+  <!-- <button id="reload-btn">Reload</button>
+  <button id="run-btn">Run!</button> -->
 
   <form>
     <h2>JavaScript</h2>
@@ -86,7 +91,7 @@
 
 <div class="output grid">
   <h2>Console</h2>
-  <iframe sandbox="allow-scripts allow-same-origin" id="console" height="200" scrolling="yes"></iframe>
+  <iframe sandbox="allow-scripts allow-same-origin" id="console" height="400" scrolling="yes"></iframe>
 </div>
 
 <script src="https://unpkg.com/@reactivex/rxjs@5.0.0-rc.2/dist/global/Rx.js"></script>
