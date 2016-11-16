@@ -7,7 +7,6 @@
 mocha.setup({ ui: 'bdd', checkLeaks: true});
 
 const expect = chai.expect;
-const expect = chai.expect;
 
 describe('Validation', function () {
 	it('Should validate that a string is not empty', function() { //#B
