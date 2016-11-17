@@ -8,17 +8,26 @@ mocha.setup({ ui: 'bdd', checkLeaks: true});
 
 const expect = chai.expect;
 
-function notEmpty(value) {
+function isEmpty(value) {
   return typeof value == 'string' && !value.trim() || typeof value == 'undefined' || value === null;
 }
 
-describe('Validation', function () {
-	it('Should validate that a string is not empty', function() { //#B
-	   expect(notEmpty('some input')).to.be(true); //#B
+function negate(fn) {
+  return function (val) {
+    return !fn(val);
+  }
+}
 
-	   expect(notEmpty(' ')).to.be(false);
-	   expect(notEmpty(null)).to.be(false);
-	   expect(notEmpty(undefined)).to.be(false);
+const notEmpty = negate(isEmpty);
+
+describe('Validation', function () {
+	it('Should validate that a string is not empty', function() {
+	   expect(notEmpty('some input')).to.be.equal(true);
+
+	   expect(notEmpty(' ')).to.be.equal(false);
+	   expect(notEmpty(null)).to.be.equal(false);
+	   expect(notEmpty(undefined)).to.be.equal(false);
+     expect(notEmpty(undefined)).to.not.be.undefined
     });
 });
 
