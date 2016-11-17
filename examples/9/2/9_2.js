@@ -46,7 +46,7 @@ describe('Ajax test', function () {
      };
 
      const error = (err) => {
-       expect(err).to.have.property('message').to.equal('');
+       expect(err).to.have.property('message').to.equal('IO Error');
        done();
      };
 
@@ -68,7 +68,7 @@ const ajax = function (url, success, error) {
   }
   req.onerror = function () {
     if(error) {
-      error(new Error(req.statusText));
+      error(new Error('IO Error'));
     }
   };
   req.send();

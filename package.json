@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "bootstrap": "^3.3.7",
+    "chai-as-promised": "^6.0.0",
     "codemirror": "^5.20.2",
     "rxjs": "^5.0.0-rc.2",
     "websocket": "^1.0.23"
