@@ -5,7 +5,6 @@
  *  @author Luis Atencio
  */
 
- //http://jsbin.com/yusoya/50/edit?html,js,output
 const csv = str => str.split(/,\s*/);
 
 const Money = function (currency, val) {
