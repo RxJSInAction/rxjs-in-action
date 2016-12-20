@@ -22,7 +22,7 @@
 
  const csv = str => str.split(/,\s*/); //#A
 
- const webservice = 'http://download.finance.yahoo.com/d/quotes.csv?s=$symbol &f=sa&e=.csv';
+ const webservice = 'http://download.finance.yahoo.com/d/quotes.csv?s=$symbol&f=sa&e=.csv';
 
  const ajax = url => new Promise((resolve, reject) => {
      let req = new XMLHttpRequest();
