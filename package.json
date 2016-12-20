@@ -29,6 +29,7 @@
     "connect-route": "^0.1.5",
     "gulp": "^3.9.1",
     "gulp-connect": "^5.0.0",
+    "http-proxy-middleware": "^0.17.3",
     "serve-static": "^1.11.1"
   },
   "dependencies": {

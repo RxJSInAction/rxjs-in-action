@@ -26,7 +26,8 @@
 const csv = str => str.split(/,\s*/); //#A
 const cleanStr = str => str.replace(/\"|\s*/g, '');
 
-const webservice = 'http://download.finance.yahoo.com/d/quotes.csv?s=$symbol&f=$options&e=.csv'
+// Proxying around CORS -> http://download.finance.yahoo.com
+const webservice = '/external/yahoo/d/quotes.csv?s=$symbol&f=$options&e=.csv';
 
 const requestQuote$ = (symbol, opts = 'sa') =>
    Rx.Observable.fromPromise(

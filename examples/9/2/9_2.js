@@ -17,7 +17,8 @@ describe('Ajax test', function () {
       function (done) {
      this.timeout(20000);
      const searchTerm = 'reactive+programming';
-     const url = `https://en.wikipedia.org/w/api.php?action=query&format=json&list=search&utf8=1&srsearch=${searchTerm}`;
+     // Proxy around CORS -> https://en.wikipedia.org
+     const url = `/external/wikipedia/w/api.php?action=query&format=json&list=search&utf8=1&srsearch=${searchTerm}`;
 
      const success = results => {
        alert(results);

@@ -102,7 +102,7 @@ const runtime$ = (function() {
             let previous = consoleFrame.body.innerHTML || '';
             write(previous.trim() + "<br />" + val);
           },
-          error: (err) => {
+          error: (val) => {
             let previous = consoleFrame.body.innerHTML || '';
             write(previous.trim() + "<br />" + val);
           }
