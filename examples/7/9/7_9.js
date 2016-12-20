@@ -96,7 +96,7 @@
 
 
  const csv = str => str.split(/,\s*/);
- const webservice = 'http://download.finance.yahoo.com/d/quotes.csv?s=$symbol &f=sa&e=.csv';
+ const webservice = '/external/yahoo/d/quotes.csv?s=$symbol &f=sa&e=.csv';
  const currency = 'usd';
 
  const requestQuote$ = symbol =>

@@ -26,6 +26,7 @@
 const csv = str => str.split(/,\s*/); //#A
 const cleanStr = str => str.replace(/\"|\s*/g, '');
 
+// Proxying around CORS -> http://download.finance.yahoo.com
 const webservice = '/external/yahoo/d/quotes.csv?s=$symbol&f=$options&e=.csv';
 
 const requestQuote$ = (symbol, opts = 'sa') =>

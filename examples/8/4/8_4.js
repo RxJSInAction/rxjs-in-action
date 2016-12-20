@@ -54,7 +54,7 @@ class StockTicker extends EventEmitter {
   start() {
     this.intId = setInterval(() => {
     const webservice =
-      `http://finance.yahoo.com/d/quotes.csv?s=${this.symbol}&f=sa&e=.csv`;
+      `/external/yahoo/d/quotes.csv?s=${this.symbol}&f=sa&e=.csv`;
 
       ajax(webservice).then(csv).then(
         ([symbol, price]) => {
