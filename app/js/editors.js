@@ -58,9 +58,29 @@ const runtime$ = (function() {
     };
   }
 
-  Rx.Observable.fromEvent(document.getElementById('example-change'), 'change')
-    .map(e => e.target.value.split('.')) // Split the chapter and id
+  const exampleSelector = document.getElementById('example-change');
+
+  const urlParams = new URLSearchParams(window.location.search);
+
+  Rx.Observable.from(exampleSelector.getElementsByTagName('option'))
+    .first(({value}) => value === urlParams.get('example'))
+    .catch(() => Rx.Observable.empty())
+    .subscribe(x => x.selected = 'selected');
+
+  const applyIfPresent = (url, key) => source =>
+    url.has(key) ? source.startWith(url.get(key)) : source;
+
+  Rx.Observable.fromEvent(
+    exampleSelector,
+    'change',
+    (e) => e.target.value
+  )
+    .let(applyIfPresent(urlParams, 'example'))
+    .map((e) => e.split('.')) // Split the chapter and id
     .filter(value => value.length === 2) // Sanity check
+    .do(([chapter, id]) => {
+      urlParams.set('example', `${chapter}.${id}`)
+    })
     .flatMap(([chapter, id]) => {
       return $.getJSON(`/rest/api/example/${chapter}/${id}`);
     })

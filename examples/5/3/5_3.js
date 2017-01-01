@@ -24,15 +24,11 @@ const search$ = Rx.Observable.fromEvent(searchBox, 'keyup')
   .mergeMap(query => Rx.Observable.ajax(query)
 		.pluck('response', 'query', 'search')
 		.defaultIfEmpty([]))
-	.mergeMap(R.map(R.prop('title')))
+	.map(R.map(R.prop('title')))
+  .do(arr => count.innerHTML = `${arr.length} results`)
   .subscribe(arr => {
-    count.innerHTML = `${arr.length} results`;
-    if(arr.length === 0) {
-      clearResults(results);
-    }
-    else {
-      appendResults(arr, results);
-    }
+    clearResults(results);
+    appendResults(arr, results);
   });
 
 
@@ -42,9 +38,11 @@ function clearResults(container) {
   }
 }
 
-function appendResults(result, container) {
+function appendResults(results, container) {
+  for (let result of results) {
     let li = document.createElement('li');
     let text = document.createTextNode(result);
     li.appendChild(text);
     container.appendChild(li);
+  }
 }
