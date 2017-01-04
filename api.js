@@ -28,18 +28,26 @@ module.exports = connectRoute(function(router) {
     res.end(JSON.stringify(req.body));
   });
 
+  /**
+   * Retrieves a specific listing by chapter and number
+   */
   router.get('/example/:chapter/:id', function(req, res, next) {
     const chapter = req.params.chapter;
     const id = req.params.id;
+    const basePath = buildFilePath(chapter, id);
 
-    const jsPath = buildFilePath(chapter, id, '.js');
-    const cssPath = buildFilePath(chapter, id, '.css');
-    const htmlPath = buildFilePath(chapter, id, '.html');
+
+    const jsPath = basePath('.js');
+    const cssPath = basePath('.css');
+    const htmlPath = basePath('.html');
+
+    const defaultErrorHandler = (defaultValue = Rx.Observable.of('')) => (source) =>
+        source.catch(err => defaultValue);
 
     Rx.Observable.forkJoin(
-      observableRead(jsPath, 'utf8').catch(err => Rx.Observable.of('')),
-      observableRead(cssPath, 'utf8').catch(err => Rx.Observable.of('')),
-      observableRead(htmlPath, 'utf8').catch(err => defaultHtml),
+      observableRead(jsPath, 'utf8').let(defaultErrorHandler()),
+      observableRead(cssPath, 'utf8').let(defaultErrorHandler()),
+      observableRead(htmlPath, 'utf8').let(defaultErrorHandler(defaultHtml)),
       (js, css, html) => ({js, css, html})
     )
       .subscribe(contents => {
@@ -49,6 +57,6 @@ module.exports = connectRoute(function(router) {
 
 });
 
-function buildFilePath(chapter, id, ext) {
-  return `${__dirname}/examples/${chapter}/${id}/${chapter}_${id}${ext}`;
+function buildFilePath(chapter, id) {
+  return (ext) => `${__dirname}/examples/${chapter}/${id}/${chapter}_${id}${ext}`;
 }
