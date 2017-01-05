@@ -1,6 +1,6 @@
 /**
  *  RxJS in Action
- *  Listing 3.2
+ *  Listing 3.1
  *  @author Paul Daniels
  *  @author Luis Atencio
  */

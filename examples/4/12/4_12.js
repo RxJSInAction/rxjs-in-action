@@ -23,9 +23,9 @@ const sendRequest = function(arr, query) {
   return arr.filter(item => {
     return query.length > 0 && item.startsWith(query);
   });
-}
+};
 
-const search$ = Rx.Observable.fromEvent(searchBox, 'keyup')
+Rx.Observable.fromEvent(searchBox, 'keyup')
   .debounceTime(1000)
   .pluck('target', 'value')
   .filter(notEmpty)
@@ -33,12 +33,8 @@ const search$ = Rx.Observable.fromEvent(searchBox, 'keyup')
   .map(query =>
          sendRequest(testData, query))
   .forEach(result => {
-    if(result.length === 0) {
-      clearResults(results);
-    }
-    else {
-      appendResults(result, results);
-    }
+    clearResults(results);
+    appendResults(result, results);
   });
 
 function clearResults(container) {
@@ -47,9 +43,11 @@ function clearResults(container) {
   }
 }
 
-function appendResults(result, container) {
+function appendResults(results, container) {
+  for (let result of results ) {
     let li = document.createElement('li');
     let text = document.createTextNode(result);
     li.appendChild(text);
     container.appendChild(li);
+  }
 }

@@ -43,10 +43,6 @@ const runtime$ = (function() {
     lineNumbers: true
   });
 
-  const html$ = Rx.Observable.fromEvent(htmlEditor.doc, 'change',
-    (instance, change) => instance.getValue())
-    .startWith(defaultHtml);
-
   function buildTag(tagName, options, transform = x => x) {
     return (source) => {
       const attrs = [];
@@ -58,8 +54,25 @@ const runtime$ = (function() {
     };
   }
 
-  Rx.Observable.fromEvent(document.getElementById('example-change'), 'change')
-    .map(e => e.target.value.split('.')) // Split the chapter and id
+  const exampleSelector = document.getElementById('example-change');
+
+  const urlParams = getUrlParams(window.location.search);
+
+  Rx.Observable.from(exampleSelector.getElementsByTagName('option'))
+    .filter(({value}) => value === urlParams['example'])
+    .take(1)
+    .subscribe(x => x.selected = 'selected');
+
+  const startWithIfPresent = (url, key) => source =>
+    url[key] ? source.startWith(url[key]) : source;
+
+  Rx.Observable.fromEvent(
+    exampleSelector,
+    'change',
+    (e) => e.target.value
+  )
+    .let(startWithIfPresent(urlParams, 'example'))
+    .map((e) => e.split('.')) // Split the chapter and id
     .filter(value => value.length === 2) // Sanity check
     .flatMap(([chapter, id]) => {
       return $.getJSON(`/rest/api/example/${chapter}/${id}`);
@@ -70,60 +83,39 @@ const runtime$ = (function() {
       html && htmlEditor.setValue(html);
     });
 
+  const onCodeChange = (tag) => () => {
+    console.log(tag, '[UPDATE]: CODE CHANGE', Date.now());
+  };
+
+  const html$ = Rx.Observable.fromEvent(htmlEditor.doc, 'change',
+    (instance, change) => instance.getValue())
+    .do(onCodeChange('html'))
+    .startWith(defaultHtml)
+    .debounceTime(1000);
+
   const js$ = Rx.Observable.fromEvent(jsEditor, 'change',
     (instance, change) => instance.getValue())
+    .do(onCodeChange('js'))
     .startWith('console.log("Welcome to RxJS in Action Code!")')
     .debounceTime(1000)
     .map(buildTag('script', {type: 'application/javascript'}, function(code) {
-      // console redirect
-      const consolePoly =
-    `
-    if(console && console.log) {
-        //Set up iframe for redirection
-        let original = window.console;
-        let iframe = parent.document.getElementById('console');
-        let consoleFrame = iframe.contentWindow || iframe.contentDocument;
-        if (consoleFrame.document) consoleFrame = consoleFrame.document;
-        let write = (frame => {
-            return content => {
-              frame.open();
-              frame.write(content);
-              frame.close();
-            };
-        })(consoleFrame);
-        write(''); // clear contents on change
-
-        window.console = {
-          log: (val) => {
-             let previous = consoleFrame.body.innerHTML || '';
-             write(previous.trim() + "<br />" + val);
-          },
-          warn: (val) => {
-            let previous = consoleFrame.body.innerHTML || '';
-            write(previous.trim() + "<br />" + val);
-          },
-          error: (val) => {
-            let previous = consoleFrame.body.innerHTML || '';
-            write(previous.trim() + "<br />" + val);
-          }
-        };
-    }
-
-    `.trim();
-      return `${consolePoly}(function wrapper() {${code}})()`;
+      //Naive way of preventing this from polluting the global namespace
+      return `(${consoleProxy.toString().trim()})();(function wrapper() {${code}})()`;
     }));
 
   const css$ = Rx.Observable.fromEvent(cssEditor, 'change',
     (instance, change) => instance.getValue())
+    .do(onCodeChange('css'))
     .startWith('')
+    .debounceTime(1000)
     .map(buildTag('style'));
 
-  const update$ = Rx.Observable.combineLatest(html$, js$, css$,
-    (html, javascript, css) => ({html, javascript, css}));
-
-
+  const update$ = js$.combineLatest(html$, css$,
+    (javascript, html, css) => ({html, javascript, css}));
 
   return update$
+    .throttleTime(1000)
+    .do(onCodeChange('combined'))
     .map(contents => {
       const {javascript, html, css} = contents;
       let builder = [];
@@ -139,8 +131,7 @@ const runtime$ = (function() {
         builder.push(beforeCss);
         builder.push(css);
         builder.push(afterCss);
-        //Naive way of preventing this from polluting the global namespace
-        //TODO: add methods to allow us to proxy the console or alerts.
+
         builder.push(javascript);
         builder.push(afterJs);
       } catch (e) {
