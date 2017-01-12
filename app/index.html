@@ -82,27 +82,43 @@
   <!-- <button id="reload-btn">Reload</button>
   <button id="run-btn">Run!</button> -->
 
+  <div class="row" style="padding-top: 5px">
+    <div class="btn-group col-xs-offset-4" role="group" aria-label="...">
+      <button id="show-javascript" type="button" class="btn btn-primary">JavaScript</button>
+      <button id="show-html" type="button" class="btn btn-primary">HTML</button>
+      <button id="show-css" type="button" class="btn btn-primary">CSS</button>
+    </div>
+  </div>
+
   <form>
-    <h2>JavaScript</h2>
-    <textarea id="javascript">
+    <div id="javascript-container">
+      <label class="h2" for="javascript">JavaScript</label>
+      <textarea class="form-control" id="javascript">
 /*
       Welcome!
       Select code samples using
       the top navigation drop-down
  */
-</textarea>
+    </textarea>
+    </div>
 
-    <h2>HTML</h2>
-    <textarea id="html"></textarea>
+    <div id="html-container">
+      <label class="h2" for="html">HTML</label>
+      <textarea id="html"></textarea>
+    </div>
 
-    <h2>CSS</h2>
-    <textarea id="css"></textarea>
+    <div id="css-container">
+      <label class="h2" for="css">CSS</label>
+      <textarea id="css"></textarea>
+    </div>
   </form>
 </div>
 
 <div class="output grid">
   <h2>Output</h2>
-  <iframe sandbox="allow-scripts allow-same-origin" id="output" height="400" scrolling="yes"></iframe>
+  <div class="well">
+    <iframe sandbox="allow-scripts allow-same-origin" id="output" height="400" scrolling="yes"></iframe>
+  </div>
 </div>
 
 
@@ -111,14 +127,15 @@
   <iframe sandbox="allow-scripts allow-same-origin" id="console" height="400" scrolling="yes"></iframe>
 </div>
 
-<script src="rxjs/bundles/Rx.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+<script src="rxjs/bundles/Rx.min.js"></script>
 <script src="codemirror/lib/codemirror.js"></script>
 <script src="codemirror/addon/mode/multiplex.js"></script>
 <script src="codemirror/mode/css/css.js"></script>
 <script src="codemirror/mode/javascript/javascript.js"></script>
 <script src="codemirror/mode/xml/xml.js"></script>
 <script src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
+<script src="babel-standalone/babel.min.js"></script>
 
 <script src="js/url.js"></script>
 <script src="js/console.js"></script>

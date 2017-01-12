@@ -33,6 +33,7 @@
     "serve-static": "^1.11.1"
   },
   "dependencies": {
+    "babel-standalone": "^6.21.1",
     "bootstrap": "^3.3.7",
     "chai-as-promised": "^6.0.0",
     "codemirror": "^5.20.2",
