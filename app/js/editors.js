@@ -7,6 +7,17 @@
 'use strict';
 const runtime$ = (function() {
 
+  function buildTag(tagName, options, transform = x => x) {
+    return (source) => {
+      const attrs = [];
+      for (let k in options) {
+        options.hasOwnProperty(k) && attrs.push(`${k}=${options[k]}`);
+      }
+
+      return `<${tagName} ${attrs.join(' ')}>${transform(source)}</${tagName}>`;
+    };
+  }
+
   const defaultHtml =
 `
 <!DOCTYPE html>
@@ -19,6 +30,21 @@ const runtime$ = (function() {
   <body></body>
 </html>
 `.trim();
+
+  Rx.Observable.of('css', 'html', 'javascript')
+    .flatMap(
+      tag => Rx.Observable.fromEvent(document.getElementById('show-' + tag), 'click'),
+      (tag, value) => ({tag, el: value.target}))
+    .subscribe(({el, tag}) => {
+      const {classList, id} = el;
+
+      classList.toggle('btn-primary');
+      classList.toggle('btn-default');
+      classList.toggle('active');
+
+
+      document.getElementById(tag + '-container').classList.toggle('hidden');
+    });
 
   // Builds a new code editor on the page
   const jsEditor = CodeMirror.fromTextArea(document.getElementById('javascript'), {
@@ -42,17 +68,6 @@ const runtime$ = (function() {
     theme: 'dracula',
     lineNumbers: true
   });
-
-  function buildTag(tagName, options, transform = x => x) {
-    return (source) => {
-      const attrs = [];
-      for (let k in options) {
-        options.hasOwnProperty(k) && attrs.push(`${k}=${options[k]}`);
-      }
-
-      return `<${tagName} ${attrs.join(' ')}>${transform(source)}</${tagName}>`;
-    };
-  }
 
   const exampleSelector = document.getElementById('example-change');
 
@@ -93,11 +108,30 @@ const runtime$ = (function() {
     .startWith(defaultHtml)
     .debounceTime(1000);
 
+  // Babel compiler options
+  const compile$ = Rx.Observable.of({
+      presets: ['es2015'],
+      // TODO Compile this separately and load independently
+      plugins: [
+        ["transform-object-rest-spread", { "useBuiltIns": true }]
+      ]
+    });
+
   const js$ = Rx.Observable.fromEvent(jsEditor, 'change',
     (instance, change) => instance.getValue())
     .do(onCodeChange('js'))
     .startWith('console.log("Welcome to RxJS in Action Code!")')
     .debounceTime(1000)
+    .do(() => console.log('Compiling...'))
+    .combineLatest(compile$, (code, opts) => {
+      try {
+        return Babel.transform(code, opts).code
+      } catch (e) {
+        console.warn('Problem compiling the code', e);
+        //FIXME Probably should not be returning code that babel doesn't even know how to compile
+        return code;
+      }
+    })
     .map(buildTag('script', {type: 'application/javascript'}, function(code) {
       //Naive way of preventing this from polluting the global namespace
       return `(${consoleProxy.toString().trim()})();(function wrapper() {${code}})()`;
@@ -139,5 +173,5 @@ const runtime$ = (function() {
       }
 
       return builder.join('\n');
-    })
+    });
 })();
