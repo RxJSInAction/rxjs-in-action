@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/RxJSInAction/rxjs-in-action#readme",
   "devDependencies": {
+    "babel-preset-es2015-rollup": "^3.0.0",
     "connect": "^3.5.0",
     "connect-route": "^0.1.5",
     "gulp": "^3.9.1",
@@ -37,7 +38,11 @@
     "bootstrap": "^3.3.7",
     "chai-as-promised": "^6.0.0",
     "codemirror": "^5.20.2",
+    "gulp-sourcemaps": "^2.4.0",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-stream": "^1.19.0",
     "rxjs": "^5.0.0-rc.2",
+    "vinyl-buffer": "^1.0.0",
     "websocket": "^1.0.23"
   }
 }

@@ -4,7 +4,7 @@
  *  @author Paul Daniels
  *  @author Luis Atencio
  */
-function consoleProxy(console = window.console) {
+export function consoleProxy(console = window.console) {
   if(console && console.log) {
     //Set up iframe for redirection
     let iframe = parent.document.getElementById('console');

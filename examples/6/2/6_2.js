@@ -4,13 +4,6 @@
  *  @author Paul Daniels
  *  @author Luis Atencio
  */
-
-function generateSessionToken() {
-     return 'xyxyxyxy'.replace(/[xy]/g, c => {
-         return Math.floor(Math.random() * 10);
-     });
-}
-
 class SessionDisposable {
   constructor(sessionToken) {
     this.token = sessionToken;
@@ -21,17 +14,23 @@ class SessionDisposable {
   }
 
   getToken() {
-     return this.token;
+    return this.token;
   }
 
   unsubscribe() { //#C
-     if (!this.disposed) {
-        this.disposed = true;
-        this.token = null;
-        document.cookie = 'session_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
- 	      console.log('Ended session! This object has been disposed.');
-     }
+    if (!this.disposed) {
+      this.disposed = true;
+      this.token = null;
+      document.cookie = 'session_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      console.log('Ended session! This object has been disposed.');
+    }
   }
+}
+
+function generateSessionToken() {
+     return 'xyxyxyxy'.replace(/[xy]/g, c => {
+         return Math.floor(Math.random() * 10);
+     });
 }
 
 const $countDownSession = Rx.Observable.using(

@@ -5,18 +5,20 @@
  *  @author Luis Atencio
  */
 'use strict';
-(function(content$) {
 
-  // Get the contents of the iframe
-  var	doc = $('#output').contents();
+import {runtime$} from './editors';
 
-  content$.subscribe(
-    content => {
-      // Rewrites the contents of the iframe
-      // Prevents carry over from previous examples
-      doc[0].open();       
-      doc[0].write(content);
-      doc[0].close();
-    },
-    err => console.log("Something went wrong! Please refresh the page."))
-})(runtime$);
+// Get the contents of the iframe
+const doc = $('#output').contents();
+
+runtime$.subscribe(
+  content => {
+    // Rewrites the contents of the iframe
+    // Prevents carry over from previous examples
+    doc[0].open();
+    doc[0].write(content);
+    doc[0].close();
+  },
+  err => {
+    console.warn("Something went wrong! Please refresh the page.", err)
+  });
