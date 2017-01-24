@@ -5,15 +5,49 @@
  *  @author Luis Atencio
  */
 'use strict';
-const fs = require('fs');
+
+// Gulp
 const gulp = require('gulp');
 const connect = require('gulp-connect');
+const sourcemaps = require('gulp-sourcemaps');
+
+// Http server stuff
 const proxy = require('http-proxy-middleware');
 const serveStatic = require('serve-static');
 const bodyParser = require('body-parser');
+
+// Rollup
+const rollup = require('rollup-stream');
+const source = require('vinyl-source-stream');
+const buffer = require('vinyl-buffer');
+const babel = require('rollup-plugin-babel');
+
+// Our modules
 const api = require('./api');
 
-gulp.task('default', ['connect', 'watch']);
+gulp.task('default', ['rollup', 'connect', 'watch']);
+
+let cache = null;
+
+gulp.task('rollup', function() {
+
+  return rollup({
+    entry: './app/js/runtime.js',
+    sourceMap: true,
+    format: 'iife',
+    plugins: [babel()],
+    cache: cache
+  })
+    .on('bundle', function(bundle) {
+      cache = bundle;
+    })
+    .pipe(source('runtime.js', './app/js'))
+    .pipe(buffer())
+    .pipe(sourcemaps.init({loadMaps: true}))
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest('./dist'));
+});
+
 
 gulp.task('html', function () {
   gulp.src('./app/*.html')
@@ -21,7 +55,7 @@ gulp.task('html', function () {
 });
 
 gulp.task('watch', function () {
-  gulp.watch(['./app/*.html'], ['html']);
+  gulp.watch(['./app/*.html', './app/js/**.js'], ['rollup', 'html']);
 });
 
 gulp.task('connect', function() {
@@ -51,7 +85,7 @@ gulp.task('connect', function() {
         proxy('/external/yahoo', yahooProxyOptions),
         proxy('/external/wikipedia', wikipediaProxyOptions),
         // Gets our static assets
-        serveStatic('app'),
+        serveStatic('dist'),
         // Serves our node_modules as static assets as well
         serveStatic('node_modules/'),
 

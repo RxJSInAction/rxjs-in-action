@@ -1,9 +1,34 @@
 /**
  *  RxJS in Action
- *  Listing 6.14
+ *  Listing 6.13 & 6.14
  *  @author Paul Daniels
  *  @author Luis Atencio
  */
+class Account {
+  constructor(id, name, type, balance) {
+    this._id = id;
+    this.name = name;
+    this.type = type;
+    this.balance = balance;
+  }
+
+  id() {
+    return this._id;
+  }
+
+  name() {
+    return this.name;
+  }
+
+  type() {
+    return this.type;
+  }
+
+  balance() {
+    return this.balance;
+  }
+}
+
  class Transaction {
   constructor(name, type, amount, from, to = null) {
      this.name = name;
@@ -34,30 +59,7 @@
   }
 }
 
-class Account {
-  constructor(id, name, type, balance) {
-     this._id = id;
-     this.name = name;
-     this.type = type;
-     this.balance = balance;
-  }
 
-  id() {
-    return this._id;
-  }
-
-  name() {
-    return this.name;
-  }
-
-  type() {
-    return this.type;
-  }
-
-  balance() {
-    return this.balance;
-  }
-}
 
 const accounts = [
      new Account('1', 'Emmet Brown', 'savings', 1000),

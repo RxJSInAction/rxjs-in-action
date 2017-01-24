@@ -4,7 +4,7 @@
  *  @author Paul Daniels
  *  @author Luis Atencio
  */
-function getUrlParams(url) {
+export function getUrlParams(url) {
   let match,
     pl     = /\+/g,  // Regex for replacing addition symbol with a space
     search = /([^&=]+)=?([^&]*)/g,

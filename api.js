@@ -29,6 +29,26 @@ module.exports = connectRoute(function(router) {
   });
 
   /**
+   * For sample 7.2
+   */
+  router.get('/data', function(req, res, next) {
+    res.end(JSON.stringify([
+      {id: 'A'},
+      {id: 'B'}
+    ]));
+  });
+
+
+  // TODO Finish these routes
+  router.get('/data/:item/info', function(req, res, next) {
+
+  });
+
+  router.get('/data/images/:image', function(req, res, next) {
+
+  });
+
+  /**
    * Retrieves a specific listing by chapter and number
    */
   router.get('/example/:chapter/:id', function(req, res, next) {
