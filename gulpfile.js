@@ -55,7 +55,7 @@ gulp.task('html', function () {
 });
 
 gulp.task('watch', function () {
-  gulp.watch(['./app/*.html', './app/js/**.js'], ['rollup', 'html']);
+  gulp.watch(['./app/*.html', './app/js/**/**.js'], ['rollup', 'html']);
 });
 
 gulp.task('connect', function() {

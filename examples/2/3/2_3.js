@@ -6,9 +6,9 @@
  */
  // Fibonnaci number generator
 function* fibonacci() {
-  var first = 1, second = 1;
+  let first = 1, second = 1;
   for(;;) {
-    var sum = second + first;
+    let sum = second + first;
     yield sum;
     first = second;
     second = sum;
@@ -18,7 +18,8 @@ function* fibonacci() {
 //--------------------------------------------------//
 //                Usage                             //
 //--------------------------------------------------//
+const prettyPrint = (item) => console.log(JSON.stringify(item));
 const iter = fibonacci();
-iter.next(); //-> {value: 2, done: false}
-iter.next(); //-> {value: 3, done: false}
-iter.next(); //-> {value: 5, done: false}
+prettyPrint(iter.next()); //-> {value: 2, done: false}
+prettyPrint(iter.next()); //-> {value: 3, done: false}
+prettyPrint(iter.next()); //-> {value: 5, done: false}

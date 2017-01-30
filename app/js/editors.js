@@ -10,6 +10,7 @@ import {getUrlParams} from './utils/url';
 import {buildTag} from "./utils/tag";
 import {defaultHtml} from "./initial";
 import {consoleProxy} from "./console";
+import {cookies} from './utils/cookies';
 
 Rx.Observable.of('css', 'html', 'javascript')
   .flatMap(
@@ -57,8 +58,10 @@ Rx.Observable.from(exampleSelector.getElementsByTagName('option'))
   .take(1)
   .subscribe(x => x.selected = 'selected');
 
-const startWithIfPresent = (url, key) => source =>
-  url[key] ? source.startWith(url[key]) : source;
+const startWithIfPresent =
+  (url, key) =>
+    source =>
+      url[key] ? source.startWith(url[key]) : source;
 
 Rx.Observable.fromEvent(
   exampleSelector,
@@ -113,8 +116,17 @@ const js$ = Rx.Observable.fromEvent(jsEditor, 'change',
   })
   .map(buildTag('script', {type: 'application/javascript'}, function (code) {
     //Naive way of preventing this from polluting the global namespace
-    return `(${consoleProxy.toString().trim()})();(function wrapper() {${code}})()`;
+    return `(${consoleProxy.toString().trim()})();
+      (function wrapper() {
+            ${code}\n
+      })()\n`;
   }));
+  // .map(code =>
+  //   buildTag('script', {
+  //     type: 'application/javascript',
+  //     src: 'babel-polyfill/dist/polyfill.min.js'
+  //   })(' ') + '\n' + code
+  // );
 
 const css$ = Rx.Observable.fromEvent(cssEditor, 'change',
   (instance, change) => instance.getValue())
@@ -127,7 +139,7 @@ const update$ = js$.combineLatest(html$, css$,
   (javascript, html, css) => ({html, javascript, css}));
 
 export const runtime$ = update$
-  .throttleTime(1000)
+  .debounceTime(1000)
   .do(onCodeChange('combined'))
   .map(contents => {
     const {javascript, html, css} = contents;

@@ -37,7 +37,7 @@ function buildTag(tagName, options) {
   return function (source) {
     var attrs = [];
     for (var k in options) {
-      options.hasOwnProperty(k) && attrs.push(k + '=' + options[k]);
+      options.hasOwnProperty(k) && attrs.push(k + '="' + options[k] + '"');
     }
 
     return '<' + tagName + ' ' + attrs.join(' ') + '>' + transform(source) + '</' + tagName + '>';
@@ -94,6 +94,56 @@ function consoleProxy() {
   }
 }
 
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+var createClass = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+}();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var slicedToArray = function () {
   function sliceIterator(arr, i) {
     var _arr = [];
@@ -131,6 +181,49 @@ var slicedToArray = function () {
     }
   };
 }();
+
+/**
+ *  RxJS in action
+ *  Chapter #
+ *  @author Paul Daniels
+ *  @author Luis Atencio
+ */
+
+var CookieManager = function () {
+  function CookieManager() {
+    classCallCheck(this, CookieManager);
+  }
+
+  createClass(CookieManager, [{
+    key: 'setCookie',
+    value: function setCookie(key, value, _ref) {
+      var path = _ref.path,
+          expires = _ref.expires;
+
+      var cookie = [key + '=' + value];
+      path && cookie.push('path=' + path);
+      expires && cookie.push('expires=' + expires);
+
+      document.cookie = cookie.join('; ');
+    }
+  }, {
+    key: 'getCookie',
+    value: function getCookie(key) {
+      var cookies = document.cookie;
+      var cookieStart = cookies.indexOf(key);
+
+      if (cookieStart < 0) return Rx.Observable.empty();else {
+        var valueStart = cookies.indexOf('=', cookieStart) + 1;
+        var cookieEnd = cookies.indexOf(';', cookieStart);
+
+        return Rx.Observable.of(cookies.substring(valueStart, cookieEnd));
+      }
+    }
+  }]);
+  return CookieManager;
+}();
+
+var cookies = new CookieManager();
 
 /**
  *  RxJS in action
@@ -251,8 +344,14 @@ var js$ = Rx.Observable.fromEvent(jsEditor, 'change', function (instance, change
   }
 }).map(buildTag('script', { type: 'application/javascript' }, function (code) {
   //Naive way of preventing this from polluting the global namespace
-  return '(' + consoleProxy.toString().trim() + ')();(function wrapper() {' + code + '})()';
+  return '(' + consoleProxy.toString().trim() + ')();\n      (function wrapper() {\n            ' + code + '\n\n      })()\n';
 }));
+// .map(code =>
+//   buildTag('script', {
+//     type: 'application/javascript',
+//     src: 'babel-polyfill/dist/polyfill.min.js'
+//   })(' ') + '\n' + code
+// );
 
 var css$ = Rx.Observable.fromEvent(cssEditor, 'change', function (instance, change) {
   return instance.getValue();
@@ -262,7 +361,7 @@ var update$ = js$.combineLatest(html$, css$, function (javascript, html, css) {
   return { html: html, javascript: javascript, css: css };
 });
 
-var runtime$ = update$.throttleTime(1000).do(onCodeChange('combined')).map(function (contents) {
+var runtime$ = update$.debounceTime(1000).do(onCodeChange('combined')).map(function (contents) {
   var javascript = contents.javascript,
       html = contents.html,
       css = contents.css;
@@ -296,6 +395,7 @@ var runtime$ = update$.throttleTime(1000).do(onCodeChange('combined')).map(funct
  *  @author Paul Daniels
  *  @author Luis Atencio
  */
+// Get the contents of the iframe
 var doc = $('#output').contents();
 
 runtime$.subscribe(function (content) {

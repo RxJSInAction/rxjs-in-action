@@ -24,10 +24,12 @@ const progressBar$ = Rx.Observable.create(observer => {
 //--------------------------------------------------//
 //                Usage                             //
 //--------------------------------------------------//
-const label = document.querySelector('#progress-indicator');
-progressBar$
-  .subscribe(
-    val   => label.textContent = (Number.isInteger(val) ? val + "%" : val),
-    error => console.log(error.message),
-    ()    => label.textContent = 'Complete!'
-);
+window.onload = function() {
+  const label = document.querySelector('#progress-indicator');
+  progressBar$
+    .subscribe(
+      val => label.textContent = (Number.isInteger(val) ? val + "%" : val),
+      error => console.log(error.message),
+      () => label.textContent = 'Complete!'
+    );
+};

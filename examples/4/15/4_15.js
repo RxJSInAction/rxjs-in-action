@@ -4,23 +4,29 @@
  *  @author Paul Daniels
  *  @author Luis Atencio
  */
-const field1 = document.querySelector('#form-field-1');
-const field2 = document.querySelector('#form-field-2');
-const submit = document.querySelector('#submit');
+const password = document.getElementById('password-field');
+const submit = document.getElementById('submit');
+const outputField = document.getElementById('output');
 
-const createField$ = elem =>
-  Rx.Observable.fromEvent(elem, 'change')
-    .pluck('target', 'value');
+const password$ = Rx.Observable.fromEvent(password, 'keyup')
+    .map(({keyCode}) => keyCode - 48);
+
+const submit$ = Rx.Observable.fromEvent(submit, 'click');
 
 Rx.Observable.combineLatest(
-    createField$(field1), createField$(field2))
-.bufferTime(5000)
-.map(R.compose(R.filter(R.compose(R.not, R.isEmpty)), R.flatten))
-.subscribe(fields => {
-    if(fields.length === 2) {
-       submit.setAttribute('style', 'background-color: yellow');
-    }
-    else {
-       submit.removeAttribute('style');
-    }
-});
+  password$.bufferTime(7000).filter(R.compose(R.not, R.isEmpty)),
+  submit$
+)
+
+  .take(10)
+  .do(([maybePassword,]) => console.log('Password is: ' + maybePassword.join('-')))
+  .subscribe(
+    ([maybePassword,]) => {
+      if (maybePassword.join('') === '1337') { //#C
+        outputField.innerHTML = 'Correct Password!';
+      } else {
+        outputField.innerHTML = 'Wrong Password!';
+      }
+    },
+    null,
+    () => outputField.innerHTML += '\n No more tries accepted!');
