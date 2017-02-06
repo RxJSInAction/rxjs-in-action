@@ -25,7 +25,8 @@ const babel = require('rollup-plugin-babel');
 // Our modules
 const api = require('./api');
 
-gulp.task('default', ['rollup', 'connect', 'watch']);
+gulp.task('default', ['build', 'connect', 'watch']);
+gulp.task('build', ['rollup', 'copy']);
 
 let cache = null;
 
@@ -48,6 +49,10 @@ gulp.task('rollup', function() {
     .pipe(gulp.dest('./dist'));
 });
 
+gulp.task('copy', function() {
+  gulp.src(['./app/*.html', './app/**/*.css'])
+    .pipe(gulp.dest('./dist/'));
+});
 
 gulp.task('html', function () {
   gulp.src('./app/*.html')
@@ -55,46 +60,18 @@ gulp.task('html', function () {
 });
 
 gulp.task('watch', function () {
-  gulp.watch(['./app/*.html', './app/js/**/**.js'], ['rollup', 'html']);
+  gulp.watch(
+    ['./app/*.html', './app/css/*.css', './app/js/**/**.js'],
+    ['rollup', 'html', 'copy']);
 });
 
 gulp.task('connect', function() {
-
-  const yahooProxyOptions = {
-    target: 'http://download.finance.yahoo.com',
-    changeOrigin: true,
-    pathRewrite: {
-      '^/external/yahoo': ''
-    }
-  };
-
-  const wikipediaProxyOptions = {
-    target: 'https://en.wikipedia.org',
-    changeOrigin: true,
-    pathRewrite: {
-      '^/external/wikipedia': ''
-    }
-  };
 
   connect.server({
     root: 'app',
     livereload: true,
     middleware: function(app, opts) {
-      return [
-        // Proxy searches to the yahoo finance APIs to avoid CORS issues
-        proxy('/external/yahoo', yahooProxyOptions),
-        proxy('/external/wikipedia', wikipediaProxyOptions),
-        // Gets our static assets
-        serveStatic('dist'),
-        // Serves our node_modules as static assets as well
-        serveStatic('node_modules/'),
-
-        // Try parsing the incoming content as json
-        bodyParser.json(),
-
-        // Add some api endpoints
-        ['/rest/api/', api]
-      ];
+      return require('./middleware');
     }
   });
 });
