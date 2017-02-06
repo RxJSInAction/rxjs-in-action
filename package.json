@@ -1,6 +1,6 @@
 {
   "name": "rxjs-in-action",
-  "version": "0.9.0",
+  "version": "0.9.1-0",
   "description": "The code sample repository for the RxJS in Action book",
   "main": "index.js",
   "scripts": {
