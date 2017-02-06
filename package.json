@@ -7,7 +7,7 @@
     "start": "node index.js"
   },
   "bin": {
-    "rxjs-in-action": "bin/rxjs-in-action.js"
+    "rxjs-in-action": "./bin/rxjs-in-action"
   },
   "repository": {
     "type": "git",
@@ -41,6 +41,7 @@
     "babel-standalone": "6.21.1",
     "body-parser": "1.16.0",
     "bootstrap": "3.3.7",
+    "chai": "^3.5.0",
     "chai-as-promised": "6.0.0",
     "codemirror": "5.20.2",
     "connect": "3.5.0",
