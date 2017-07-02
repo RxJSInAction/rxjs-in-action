@@ -12,7 +12,7 @@ const ajax = function (url) {
         req.open('GET', url);
         req.onload = function() {
             if(req.status == 200) {
-               let data = JSON.parse(req.responseText);
+               let data = req.response;
                resolve(data);  //#B
             }
             else {

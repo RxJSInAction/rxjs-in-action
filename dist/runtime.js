@@ -1,5 +1,8 @@
-(function () {
+(function (rxjs,$,CodeMirror) {
 'use strict';
+
+$ = $ && 'default' in $ ? $['default'] : $;
+CodeMirror = CodeMirror && 'default' in CodeMirror ? CodeMirror['default'] : CodeMirror;
 
 /**
  *  RxJS in action
@@ -62,35 +65,33 @@ function consoleProxy() {
   var console = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : window.console;
 
   if (console && console.log) {
-    (function () {
-      //Set up iframe for redirection
-      var iframe = parent.document.getElementById('console');
-      var consoleFrame = iframe.contentWindow || iframe.contentDocument;
-      if (consoleFrame.document) consoleFrame = consoleFrame.document;
-      var write = function (frame) {
-        return function (content) {
-          frame.open();
-          frame.write(content);
-          frame.close();
-        };
-      }(consoleFrame);
-      write(''); // clear contents on change
-
-      window.console = {
-        log: function log(val) {
-          var previous = consoleFrame.body.innerHTML || '';
-          write(previous.trim() + "<br />" + val);
-        },
-        warn: function warn(val) {
-          var previous = consoleFrame.body.innerHTML || '';
-          write(previous.trim() + "<br />" + val);
-        },
-        error: function error(val) {
-          var previous = consoleFrame.body.innerHTML || '';
-          write(previous.trim() + "<br />" + val);
-        }
+    //Set up iframe for redirection
+    var iframe = parent.document.getElementById('console');
+    var consoleFrame = iframe.contentWindow || iframe.contentDocument;
+    if (consoleFrame.document) consoleFrame = consoleFrame.document;
+    var write = function (frame) {
+      return function (content) {
+        frame.open();
+        frame.write(content);
+        frame.close();
       };
-    })();
+    }(consoleFrame);
+    write(''); // clear contents on change
+
+    window.console = {
+      log: function log(val) {
+        var previous = consoleFrame.body.innerHTML || '';
+        write(previous.trim() + "<br />" + val);
+      },
+      warn: function warn(val) {
+        var previous = consoleFrame.body.innerHTML || '';
+        write(previous.trim() + "<br />" + val);
+      },
+      error: function error(val) {
+        var previous = consoleFrame.body.innerHTML || '';
+        write(previous.trim() + "<br />" + val);
+      }
+    };
   }
 }
 
@@ -192,32 +193,55 @@ var slicedToArray = function () {
 var CookieManager = function () {
   function CookieManager() {
     classCallCheck(this, CookieManager);
+
+    this._changed = new rxjs.Subject();
   }
 
   createClass(CookieManager, [{
+    key: '_notifyChanged',
+    value: function _notifyChanged(key) {
+      this._changed.next(key);
+    }
+  }, {
     key: 'setCookie',
-    value: function setCookie(key, value, _ref) {
-      var path = _ref.path,
-          expires = _ref.expires;
+    value: function setCookie(key, value) {
+      var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      var path = opts.path,
+          expires = opts.expires;
 
       var cookie = [key + '=' + value];
       path && cookie.push('path=' + path);
       expires && cookie.push('expires=' + expires);
-
       document.cookie = cookie.join('; ');
+      this._notifyChanged(key);
     }
   }, {
     key: 'getCookie',
     value: function getCookie(key) {
-      var cookies = document.cookie;
-      var cookieStart = cookies.indexOf(key);
+      return rxjs.Observable.defer(function () {
+        var cookies = document.cookie;
+        var cookieStart = cookies.indexOf(key);
 
-      if (cookieStart < 0) return Rx.Observable.empty();else {
-        var valueStart = cookies.indexOf('=', cookieStart) + 1;
-        var cookieEnd = cookies.indexOf(';', cookieStart);
+        if (cookieStart < 0) return rxjs.Observable.empty();else {
+          var valueStart = cookies.indexOf('=', cookieStart) + 1;
+          var cookieEnd = cookies.indexOf(';', cookieStart);
+          cookieEnd = cookieEnd < 0 ? cookies.length : cookieEnd;
 
-        return Rx.Observable.of(cookies.substring(valueStart, cookieEnd));
-      }
+          return rxjs.Observable.of(cookies.substring(valueStart, cookieEnd));
+        }
+      });
+    }
+  }, {
+    key: 'watchCookie',
+    value: function watchCookie(key) {
+      return this._changed.asObservable().filter(function (x) {
+        return key === x;
+      }).startWith(key).flatMapTo(this.getCookie(key));
+    }
+  }], [{
+    key: 'removeCookie',
+    value: function removeCookie(key) {
+      document.cookie = key + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     }
   }]);
   return CookieManager;
@@ -231,8 +255,18 @@ var cookies = new CookieManager();
  *  @author Paul Daniels
  *  @author Luis Atencio
  */
-Rx.Observable.of('css', 'html', 'javascript').flatMap(function (tag) {
-  return Rx.Observable.fromEvent(document.getElementById('show-' + tag), 'click');
+cookies.watchCookie('example').subscribe(function (x) {
+  return console.log('Cookie is ' + x);
+});
+
+cookies.setCookie('example', '7.2');
+
+cookies.setCookie('example', '7.3');
+
+cookies.setCookie('example', '8.1');
+
+rxjs.Observable.of('css', 'html', 'javascript').flatMap(function (tag) {
+  return rxjs.Observable.fromEvent(document.getElementById('show-' + tag), 'click');
 }, function (tag, value) {
   return { tag: tag, el: value.target };
 }).subscribe(function (_ref) {
@@ -274,9 +308,10 @@ var cssEditor = CodeMirror.fromTextArea(document.getElementById('css'), {
 
 var exampleSelector = document.getElementById('example-change');
 
+// Url params always take precedence over the cookies
 var urlParams = getUrlParams(window.location.search);
 
-Rx.Observable.from(exampleSelector.getElementsByTagName('option')).filter(function (_ref2) {
+rxjs.Observable.from(exampleSelector.getElementsByTagName('option')).filter(function (_ref2) {
   var value = _ref2.value;
   return value === urlParams['example'];
 }).take(1).subscribe(function (x) {
@@ -289,7 +324,7 @@ var startWithIfPresent = function startWithIfPresent(url, key) {
   };
 };
 
-Rx.Observable.fromEvent(exampleSelector, 'change', function (e) {
+rxjs.Observable.fromEvent(exampleSelector, 'change', function (e) {
   return e.target.value;
 }).let(startWithIfPresent(urlParams, 'example')).map(function (e) {
   return e.split('.');
@@ -319,18 +354,18 @@ var onCodeChange = function onCodeChange(tag) {
   };
 };
 
-var html$ = Rx.Observable.fromEvent(htmlEditor.doc, 'change', function (instance, change) {
+var html$ = rxjs.Observable.fromEvent(htmlEditor.doc, 'change', function (instance, change) {
   return instance.getValue();
 }).do(onCodeChange('html')).startWith(defaultHtml).debounceTime(1000);
 
 // Babel compiler options
-var compile$ = Rx.Observable.of({
+var compile$ = rxjs.Observable.of({
   presets: ['es2015'],
   // TODO Compile this separately and load independently
   plugins: [["transform-object-rest-spread", { "useBuiltIns": true }]]
 });
 
-var js$ = Rx.Observable.fromEvent(jsEditor, 'change', function (instance, change) {
+var js$ = rxjs.Observable.fromEvent(jsEditor, 'change', function (instance, change) {
   return instance.getValue();
 }).do(onCodeChange('js')).startWith('console.log("Welcome to RxJS in Action Code!")').debounceTime(1000).do(function () {
   return console.log('Compiling...');
@@ -344,7 +379,7 @@ var js$ = Rx.Observable.fromEvent(jsEditor, 'change', function (instance, change
   }
 }).map(buildTag('script', { type: 'application/javascript' }, function (code) {
   //Naive way of preventing this from polluting the global namespace
-  return '(' + consoleProxy.toString().trim() + ')();\n      (function wrapper() {\n            ' + code + '\n\n      })()\n';
+  return ';(' + consoleProxy.toString().trim() + ')();\n      (function wrapper() {\n            ' + code + '\n\n      })()\n';
 }));
 // .map(code =>
 //   buildTag('script', {
@@ -353,7 +388,7 @@ var js$ = Rx.Observable.fromEvent(jsEditor, 'change', function (instance, change
 //   })(' ') + '\n' + code
 // );
 
-var css$ = Rx.Observable.fromEvent(cssEditor, 'change', function (instance, change) {
+var css$ = rxjs.Observable.fromEvent(cssEditor, 'change', function (instance, change) {
   return instance.getValue();
 }).do(onCodeChange('css')).startWith('').debounceTime(1000).map(buildTag('style'));
 
@@ -408,5 +443,5 @@ runtime$.subscribe(function (content) {
   console.warn("Something went wrong! Please refresh the page.", err);
 });
 
-}());
+}(Rx,$,CodeMirror));
 //# sourceMappingURL=runtime.js.map

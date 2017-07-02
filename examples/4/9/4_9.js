@@ -27,20 +27,20 @@ searchBox.addEventListener('keyup', function (event) {
      console.log('querying...');
      let searchResults = [];
      if(query && query.length > 0) {
-       for(result of testData) {
+       for(let result of testData) {
         if(result.startsWith(query)) {
           searchResults.push(result);
         }
-      }
-      }
-      if(searchResults.length === 0) {
-        clearResults(results);
-      }
-      else {
-        for(let result of searchResults) {
-          appendResult(result, results);
-        }
-      }
+       }
+     }
+     if(searchResults.length === 0) {
+       clearResults(results);
+     }
+     else {
+       for(let result of searchResults) {
+         appendResult(result, results);
+       }
+     }
    }, 1000, event.target.value);  //#D
 });
 

@@ -24,28 +24,42 @@ module.exports = connectRoute(function(router) {
   /**
    * Example of how to set up a new route
    */
-  router.post('/echo', function(req, res, next) {
+  router.post('/echo', function(req, res) {
     res.end(JSON.stringify(req.body));
   });
+
+  const dataItems = [
+    {id: 'A', img: 'abc'},
+    {id: 'B', img: 'def'}
+    ];
 
   /**
    * For sample 7.2
    */
   router.get('/data', function(req, res, next) {
-    res.end(JSON.stringify([
-      {id: 'A'},
-      {id: 'B'}
-    ]));
+    res.setHeader('Content-Type', 'application/json');
+    Rx.Observable.from(dataItems)
+      .map(({id}) => ({id}))
+      .toArray()
+      .map(x => JSON.stringify(x))
+      .subscribe(body => res.end(body));
   });
 
 
-  // TODO Finish these routes
   router.get('/data/:item/info', function(req, res, next) {
+    res.setHeader('Content-Type', 'application/json');
+    const {item} = req.params;
 
+    Rx.Observable.from(dataItems)
+      .find(({id}) => item === id)
+      .map(x => JSON.stringify(x))
+      .subscribe(body => res.end(body));
   });
 
   router.get('/data/images/:image', function(req, res, next) {
-
+    // Throw 500s so that we can see the error
+    res.statusCode = 500;
+    res.end('');
   });
 
   /**
@@ -56,13 +70,12 @@ module.exports = connectRoute(function(router) {
     const id = req.params.id;
     const basePath = buildFilePath(chapter, id);
 
-
     const jsPath = basePath('.js');
     const cssPath = basePath('.css');
     const htmlPath = basePath('.html');
 
-    const defaultErrorHandler = (defaultValue = Rx.Observable.of('')) => (source) =>
-        source.catch(err => defaultValue);
+    const defaultErrorHandler = (defaultValue = Rx.Observable.of('')) =>
+      source => source.catch(err => defaultValue);
 
     Rx.Observable.forkJoin(
       observableRead(jsPath, 'utf8').let(defaultErrorHandler()),

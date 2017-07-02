@@ -11,10 +11,22 @@ import {buildTag} from "./utils/tag";
 import {defaultHtml} from "./initial";
 import {consoleProxy} from "./console";
 import {cookies} from './utils/cookies';
+import { Observable } from 'rxjs';
+import $ from 'jquery';
+import CodeMirror from 'codemirror';
 
-Rx.Observable.of('css', 'html', 'javascript')
+cookies.watchCookie('example')
+  .subscribe(x => console.log(`Cookie is ${x}`));
+
+cookies.setCookie('example', '7.2');
+
+cookies.setCookie('example', '7.3');
+
+cookies.setCookie('example', '8.1');
+
+Observable.of('css', 'html', 'javascript')
   .flatMap(
-    tag => Rx.Observable.fromEvent(document.getElementById('show-' + tag), 'click'),
+    tag => Observable.fromEvent(document.getElementById('show-' + tag), 'click'),
     (tag, value) => ({tag, el: value.target}))
   .subscribe(({el, tag}) => {
     const {classList, id} = el;
@@ -51,9 +63,10 @@ const cssEditor = CodeMirror.fromTextArea(document.getElementById('css'), {
 
 const exampleSelector = document.getElementById('example-change');
 
+// Url params always take precedence over the cookies
 const urlParams = getUrlParams(window.location.search);
 
-Rx.Observable.from(exampleSelector.getElementsByTagName('option'))
+Observable.from(exampleSelector.getElementsByTagName('option'))
   .filter(({value}) => value === urlParams['example'])
   .take(1)
   .subscribe(x => x.selected = 'selected');
@@ -63,7 +76,7 @@ const startWithIfPresent =
     source =>
       url[key] ? source.startWith(url[key]) : source;
 
-Rx.Observable.fromEvent(
+Observable.fromEvent(
   exampleSelector,
   'change',
   (e) => e.target.value
@@ -84,14 +97,14 @@ const onCodeChange = (tag) => () => {
   console.log(tag, '[UPDATE]: CODE CHANGE', Date.now());
 };
 
-const html$ = Rx.Observable.fromEvent(htmlEditor.doc, 'change',
+const html$ = Observable.fromEvent(htmlEditor.doc, 'change',
   (instance, change) => instance.getValue())
   .do(onCodeChange('html'))
   .startWith(defaultHtml)
   .debounceTime(1000);
 
 // Babel compiler options
-const compile$ = Rx.Observable.of({
+const compile$ = Observable.of({
   presets: ['es2015'],
   // TODO Compile this separately and load independently
   plugins: [
@@ -99,7 +112,7 @@ const compile$ = Rx.Observable.of({
   ]
 });
 
-const js$ = Rx.Observable.fromEvent(jsEditor, 'change',
+const js$ = Observable.fromEvent(jsEditor, 'change',
   (instance, change) => instance.getValue())
   .do(onCodeChange('js'))
   .startWith('console.log("Welcome to RxJS in Action Code!")')
@@ -116,7 +129,7 @@ const js$ = Rx.Observable.fromEvent(jsEditor, 'change',
   })
   .map(buildTag('script', {type: 'application/javascript'}, function (code) {
     //Naive way of preventing this from polluting the global namespace
-    return `(${consoleProxy.toString().trim()})();
+    return `;(${consoleProxy.toString().trim()})();
       (function wrapper() {
             ${code}\n
       })()\n`;
@@ -128,7 +141,7 @@ const js$ = Rx.Observable.fromEvent(jsEditor, 'change',
   //   })(' ') + '\n' + code
   // );
 
-const css$ = Rx.Observable.fromEvent(cssEditor, 'change',
+const css$ = Observable.fromEvent(cssEditor, 'change',
   (instance, change) => instance.getValue())
   .do(onCodeChange('css'))
   .startWith('')

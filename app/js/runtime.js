@@ -7,6 +7,7 @@
 'use strict';
 
 import {runtime$} from './editors';
+import $ from 'jquery';
 
 // Get the contents of the iframe
 const doc = $('#output').contents();
