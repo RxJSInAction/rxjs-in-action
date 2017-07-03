@@ -21,6 +21,7 @@ const rollup = require('rollup-stream');
 const source = require('vinyl-source-stream');
 const buffer = require('vinyl-buffer');
 const babel = require('rollup-plugin-babel');
+const nodeResolve = require('rollup-plugin-node-resolve');
 
 // Our modules
 const api = require('./api');
@@ -36,7 +37,14 @@ gulp.task('rollup', function() {
     entry: './app/js/runtime.js',
     sourceMap: true,
     format: 'iife',
-    plugins: [babel()],
+    plugins: [babel({
+      exclude: 'node_modules/**'
+    })],
+    globals: {
+      'rxjs': 'Rx',
+      'jquery': '$',
+      'codemirror': 'CodeMirror'
+    },
     cache: cache
   })
     .on('bundle', function(bundle) {

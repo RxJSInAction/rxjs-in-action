@@ -7,24 +7,24 @@
 
 // From 7.1
 const ajax = function (url, success, error) {
-   let req = new XMLHttpRequest();
-   req.responseType = 'json';
-   req.open('GET', url);
-   req.onload = function() {
-      if(req.status == 200) {
-         let data = JSON.parse(req.responseText);
-         success(data);
-      }
-      else {
-         req.onerror();
-      }
-   };
-   req.onerror = function () {
-      if(error) {
-         error(new Error('IO Error'));
-      }
-   };
-   req.send();
+  let req = new XMLHttpRequest();
+  req.responseType = 'json';
+  req.open('GET', url);
+  req.onload = function () {
+    if (req.status === 200) {
+      let data = req.response;
+      success(data);
+    }
+    else {
+      req.onerror();
+    }
+  };
+  req.onerror = function () {
+    if (error) {
+      error(new Error('IO Error'));
+    }
+  };
+  req.send();
 };
 
 ajax('/rest/api/data', data => {
@@ -44,5 +44,5 @@ ajax('/rest/api/data', data => {
   });
 
 function showImage(data) {
-
+  console.log('successful');
 }
