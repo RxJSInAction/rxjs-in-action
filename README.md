@@ -1,9 +1,21 @@
 # rxjs-in-action
 Code sample repository
 
-### Adding new Examples
+## Install
 
-Add new examples unders the `/examples` directory.
+First download/fork/clone the project
+
+To start the server run (in the rxjs-in-action directory):
+
+`npm install && npm install -g gulp && gulp`
+
+On subsequent runs (if all goes well) you can run just 
+
+`gulp`
+
+### Adding new Examples (FROZEN)
+
+Add new examples under the `/examples` directory.
 Each example should be organized under the sub-directory corresponding to its chapter and index.
 
 i.e. Listing 2.3 => `/examples/2/3`
@@ -21,10 +33,7 @@ Go into index.html and add:
 
 This will allow the new sample to get picked up by the front end.
 
-To start the server run:
 
-`npm install && npm install -g gulp && gulp`
+### Bug reports
 
-On subsequent runs (if all goes well) you can run just 
-
-`gulp`
+If you find a bug or an issue with one of the code samples please file an issue so that we can get it fixed for other readers
