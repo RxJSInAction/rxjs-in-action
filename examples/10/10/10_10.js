@@ -36,7 +36,7 @@ function computeTransaction(tx, doc) {
   const newBalance = target + amount * factor;
 
   // Create a new balances object
-  const newAccounts = Object.assign({}, doc, {[account]: newBalance});
+  return Object.assign({}, doc, {[account]: newBalance});
   // const newAccounts = {...doc, [account]: newBalance};
 }
 
