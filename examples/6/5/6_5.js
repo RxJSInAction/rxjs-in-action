@@ -26,14 +26,15 @@
 
  const gAPILoadAsObservable = Rx.Observable.bindCallback(gapi.load);
 
- const goog$ = url => Rx.Observable.of(url)
+  const goog$ = url => Rx.Observable.of(url)
     .filter(R.compose(R.not, R.isEmpty))
-    .map(encodeURIComponent)
-    .switchMap(() => gAPILoadAsObservable('client'))
-    .do(() => gapi.client.setApiKey(GKEY))
-    .switchMap(() => Rx.Observable.fromPromise(gapi.client.load('urlshortener', 'v1')))
-    .switchMap(() => Rx.Observable.fromPromise(gapi.client.urlshortener.url.insert(
-         {'longUrl': example_url}))
+    .switchMap(
+      encodedUri => gAPILoadAsObservable('client')
+        .do(() => gapi.client.setApiKey(GKEY))
+        .switchMap(() => Rx.Observable.fromPromise(gapi.client.load('urlshortener', 'v1')))
+        .switchMap(() => Rx.Observable.fromPromise(
+          gapi.client.urlshortener.url.insert({'longUrl': encodedUri}))
+        )
     )
     .filter(obj => obj.status === 200)
     .pluck('result', 'id');
