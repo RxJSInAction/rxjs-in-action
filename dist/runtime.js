@@ -1,8 +1,8 @@
 (function (rxjs,$,CodeMirror) {
 'use strict';
 
-$ = $ && 'default' in $ ? $['default'] : $;
-CodeMirror = CodeMirror && 'default' in CodeMirror ? CodeMirror['default'] : CodeMirror;
+$ = $ && $.hasOwnProperty('default') ? $['default'] : $;
+CodeMirror = CodeMirror && CodeMirror.hasOwnProperty('default') ? CodeMirror['default'] : CodeMirror;
 
 /**
  *  RxJS in action
@@ -94,6 +94,123 @@ function consoleProxy() {
     };
   }
 }
+
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
+
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+
+
+
 
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -255,6 +372,8 @@ var cookies = new CookieManager();
  *  @author Paul Daniels
  *  @author Luis Atencio
  */
+'use strict';
+
 cookies.watchCookie('example').subscribe(function (x) {
   return console.log('Cookie is ' + x);
 });
@@ -272,8 +391,7 @@ rxjs.Observable.of('css', 'html', 'javascript').flatMap(function (tag) {
 }).subscribe(function (_ref) {
   var el = _ref.el,
       tag = _ref.tag;
-  var classList = el.classList,
-      id = el.id;
+  var classList = el.classList;
 
 
   classList.toggle('btn-primary');
@@ -430,7 +548,8 @@ var runtime$ = update$.debounceTime(1000).do(onCodeChange('combined')).map(funct
  *  @author Paul Daniels
  *  @author Luis Atencio
  */
-// Get the contents of the iframe
+'use strict';
+
 var doc = $('#output').contents();
 
 runtime$.subscribe(function (content) {
