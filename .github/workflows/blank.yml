@@ -11,18 +11,18 @@ jobs:
       matrix:
         node-version: [v10.19.0]
 
-    services:
-      nginx:
-        image: nginx
-        ports:
-          - 8080:8080
+    # services:
+    #   nginx:
+    #     image: nginx
+    #     ports:
+    #       - 8080:8080
 
     steps:
     - uses: actions/checkout@v1
     - name: Install Dependencies
       run: yarn install && yarn global add gulp
     - name: Run Server
-      run: gulp & sleep 10 && curl http://localhost:8000
+      run: gulp && curl http://localhost:8000
     # - name: curl
     #   uses: wei/curl@v1
     #   with:
