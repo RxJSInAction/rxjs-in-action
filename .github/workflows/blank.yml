@@ -14,12 +14,10 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Install Dependencies
-      run: yarn install && yarn global add gulp wait-port
+      run: yarn install && yarn global add gulp
     - name: Run Server
-      run: gulp & sleep 10
-    - name: Wait port
-      run: wait-port -t 10000 localhost:8080
-    - name: curl
-      uses: wei/curl@v1
-      with:
-        args: http://localhost:8080
+      run: gulp & sleep 10 && curl http://localhost:8000
+    # - name: curl
+    #   uses: wei/curl@v1
+    #   with:
+    #     args: http://localhost:8080
