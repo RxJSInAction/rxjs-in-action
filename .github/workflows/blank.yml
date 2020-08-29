@@ -1,0 +1,22 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install Dependencies
+      run: yarn install && yarn global add gulp
+    - name: Run Server
+      run: |
+        gulp &
+        sleep 10
+        curl localhost:8080

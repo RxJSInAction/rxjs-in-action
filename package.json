@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node index.js"
   },
+  "resolutions": {
+    "graceful-fs": "^4.2.4"
+  },
   "bin": {
     "rxjs-in-action": "./bin/rxjs-in-action"
   },
