@@ -22,8 +22,10 @@ jobs:
     - name: Install Dependencies
       run: yarn install && yarn global add gulp
     - name: Run Server
-      run: gulp
-    - name: curl
       uses: wei/curl@v1
       with:
-        args: curl docker:8080
+        args: |
+          gulp &
+          sleep 10
+          curl docker:8080
+
