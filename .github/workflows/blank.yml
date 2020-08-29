@@ -22,7 +22,7 @@ jobs:
     - name: Install Dependencies
       run: yarn install && yarn global add gulp
     - name: Run Server
-      run: gulp && curl http://localhost:8000
+      run: gulp & curl http://localhost:8000
     # - name: curl
     #   uses: wei/curl@v1
     #   with:
