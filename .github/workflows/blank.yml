@@ -11,6 +11,12 @@ jobs:
       matrix:
         node-version: [v10.19.0]
 
+    services:
+      nginx:
+        image: nginx
+        ports:
+          - 8080:8080
+
     steps:
     - uses: actions/checkout@v1
     - name: Install Dependencies
