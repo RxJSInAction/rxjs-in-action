@@ -16,7 +16,7 @@ jobs:
     - name: Install Dependencies
       run: yarn install && yarn global add gulp
     - name: Run Server
-      run: gulp
+      run: gulp & sleep 10
     - name: curl
       uses: wei/curl@v1
       with:
