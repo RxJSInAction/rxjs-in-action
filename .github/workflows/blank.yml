@@ -9,13 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [v10.19.0]
-
-    # services:
-    #   nginx:
-    #     image: nginx
-    #     ports:
-    #       - 8080:8080
+        node-version: [8.x, 10.x]
 
     steps:
     - uses: actions/checkout@v1
@@ -26,14 +20,3 @@ jobs:
         gulp &
         sleep 10
         curl localhost:8080
-
-      
-      
-    #   gulp
-    # - name: curl
-    #   uses: wei/curl@v1
-    #   with:
-    #     args: curl docker:8080
-
-
-
