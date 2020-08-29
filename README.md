@@ -7,7 +7,7 @@ First download/fork/clone the project
 
 To start the server run (in the rxjs-in-action directory):
 
-`npm install && npm install -g gulp && gulp`
+`yarn install && yarn global add gulp && gulp`
 
 On subsequent runs (if all goes well) you can run just 
 

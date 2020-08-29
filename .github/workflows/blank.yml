@@ -1,0 +1,19 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install Dependencies
+      run: yarn install && yarn global add gulp
+    - name: Run Server
+      run: gulp
+    - name: curl
+      uses: wei/curl@v1
+      with:
+        args: http://localhost:8080
