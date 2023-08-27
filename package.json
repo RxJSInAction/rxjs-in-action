@@ -42,17 +42,17 @@
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "babel-standalone": "^6.26.0",
-    "body-parser": "1.16.0",
+    "body-parser": "^1.20.2",
     "bootstrap": "3.3.7",
     "chai": "^4.3.8",
     "chai-as-promised": "^7.1.1",
     "codemirror": "5.20.2",
-    "connect": "3.5.0",
+    "connect": "^3.7.0",
     "connect-route": "0.1.5",
     "http-proxy-middleware": "0.17.3",
     "rxjs": "5.0.3",
-    "serve-static": "1.11.1",
+    "serve-static": "^1.15.0",
     "vinyl": "^3.0.0",
-    "websocket": "1.0.23"
+    "websocket": "^1.0.34"
   }
 }
