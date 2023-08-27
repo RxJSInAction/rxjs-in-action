@@ -550,6 +550,7 @@ var runtime$ = update$.debounceTime(1000).do(onCodeChange('combined')).map(funct
  */
 'use strict';
 
+// Get the contents of the iframe
 var doc = $('#output').contents();
 
 runtime$.subscribe(function (content) {

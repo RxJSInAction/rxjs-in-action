@@ -29,15 +29,15 @@
   "homepage": "https://github.com/RxJSInAction/rxjs-in-action#readme",
   "devDependencies": {
     "babel-preset-es2015-rollup": "^3.0.0",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.2",
     "gulp-connect": "^5.0.0",
-    "gulp-sourcemaps": "^2.4.0",
+    "gulp-sourcemaps": "^3.0.0",
     "jquery": "^3.2.1",
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-stream": "^1.19.0",
     "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-source-stream": "^2.0.0"
   },
   "dependencies": {
     "babel-polyfill": "6.22.0",
@@ -52,6 +52,7 @@
     "http-proxy-middleware": "0.17.3",
     "rxjs": "5.0.3",
     "serve-static": "1.11.1",
+    "vinyl": "^3.0.0",
     "websocket": "1.0.23"
   }
 }
