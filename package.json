@@ -33,7 +33,7 @@
     "gulp-connect": "^5.0.0",
     "gulp-sourcemaps": "^3.0.0",
     "jquery": "^3.2.1",
-    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-babel": "^3.0.7",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-stream": "^1.19.0",
     "vinyl-buffer": "^1.0.0",
