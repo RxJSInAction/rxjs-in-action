@@ -50,7 +50,7 @@
     "connect": "^3.7.0",
     "connect-route": "0.1.5",
     "http-proxy-middleware": "^0.21.0",
-    "rxjs": "5.0.3",
+    "rxjs": "^5.5.12",
     "serve-static": "^1.15.0",
     "vinyl": "^3.0.0",
     "websocket": "^1.0.34"
