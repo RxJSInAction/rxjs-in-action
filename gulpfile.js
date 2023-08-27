@@ -25,17 +25,12 @@ const nodeResolve = require('rollup-plugin-node-resolve');
 
 // Our modules
 const api = require('./api');
-
-gulp.task('default', ['build', 'connect', 'watch']);
-gulp.task('build', ['rollup', 'copy']);
-
 let cache = null;
 
 gulp.task('rollup', function() {
-
   return rollup({
-    entry: './app/js/runtime.js',
-    sourceMap: true,
+    input: './app/js/runtime.js',
+    sourcemap: true,
     format: 'iife',
     plugins: [babel({
       exclude: 'node_modules/**'
@@ -58,7 +53,7 @@ gulp.task('rollup', function() {
 });
 
 gulp.task('copy', function() {
-  gulp.src(['./app/*.html', './app/**/*.css'])
+  return gulp.src(['./app/*.html', './app/**/*.css'])
     .pipe(gulp.dest('./dist/'));
 });
 
@@ -74,7 +69,6 @@ gulp.task('watch', function () {
 });
 
 gulp.task('connect', function() {
-
   connect.server({
     root: 'app',
     livereload: true,
@@ -83,3 +77,6 @@ gulp.task('connect', function() {
     }
   });
 });
+
+gulp.task('build', gulp.series(['rollup', 'copy']));
+gulp.task('default', gulp.series(['build', 'connect', 'watch']));

@@ -29,29 +29,30 @@
   "homepage": "https://github.com/RxJSInAction/rxjs-in-action#readme",
   "devDependencies": {
     "babel-preset-es2015-rollup": "^3.0.0",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.2",
     "gulp-connect": "^5.0.0",
-    "gulp-sourcemaps": "^2.4.0",
+    "gulp-sourcemaps": "^3.0.0",
     "jquery": "^3.2.1",
-    "rollup-plugin-babel": "^2.7.1",
-    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-babel": "^3.0.7",
+    "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-stream": "^1.19.0",
     "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-source-stream": "^2.0.0"
   },
   "dependencies": {
-    "babel-polyfill": "6.22.0",
-    "babel-standalone": "6.21.1",
-    "body-parser": "1.16.0",
-    "bootstrap": "3.3.7",
-    "chai": "^3.5.0",
-    "chai-as-promised": "6.0.0",
-    "codemirror": "5.20.2",
-    "connect": "3.5.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-standalone": "^6.26.0",
+    "body-parser": "^1.20.2",
+    "bootstrap": "^5.3.1",
+    "chai": "^4.3.8",
+    "chai-as-promised": "^7.1.1",
+    "codemirror": "^5.65.14",
+    "connect": "^3.7.0",
     "connect-route": "0.1.5",
-    "http-proxy-middleware": "0.17.3",
-    "rxjs": "5.0.3",
-    "serve-static": "1.11.1",
-    "websocket": "1.0.23"
+    "http-proxy-middleware": "^0.21.0",
+    "rxjs": "^5.5.12",
+    "serve-static": "^1.15.0",
+    "vinyl": "^3.0.0",
+    "websocket": "^1.0.34"
   }
 }
